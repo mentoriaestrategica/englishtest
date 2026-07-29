@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Test Generator — Maísa ✈️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF6EE;--line:#DCE6F0;--margin:#e8a2ad;
+  --ink:#22314f;--soft:#5b6785;
+  --pink:#ff2e93;--pink-bg:#ffd9ec;
+  --red:#d6455a;--red-bg:#fde3e3;
+  --green:#1f9d63;--green-bg:#e2f6ec;
+  --blue:#2f6fed;--blue-bg:#e3ecff;
+  --yellow:#ffdd66;--yellow-bg:#fff6d8;
+  --teal:#1abc9c;--orange:#e67e22;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;color:var(--ink);
+  background:
+    linear-gradient(90deg,transparent 46px,var(--margin) 47px,var(--margin) 48px,transparent 49px),
+    repeating-linear-gradient(var(--paper),var(--paper) 33px,var(--line) 34px,var(--paper) 35px);
+  min-height:100vh;
+}
+.wrap{max-width:800px;margin:0 auto;padding:32px 20px 80px 64px;}
+@media(max-width:640px){.wrap{padding:24px 14px 60px 14px;}}
+
+/* START SCREEN */
+.start-screen{text-align:center;padding:60px 20px;}
+.start-screen h1{font-family:'Caveat',cursive;font-size:3rem;color:var(--pink);line-height:1.1;}
+.start-screen .sub{color:var(--soft);font-size:.92rem;margin:8px auto 0;max-width:520px;}
+.struct-box{
+  background:#fffdf8;border:1px solid #e7dfc8;border-radius:12px;
+  padding:18px 22px;margin:24px auto;max-width:540px;text-align:left;
+  font-size:.78rem;color:var(--soft);line-height:1.7;
+}
+.struct-box b{color:var(--ink);}
+.timer-toggle{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin:28px 0 8px;flex-wrap:wrap;
+}
+.timer-toggle label{font-size:.95rem;font-weight:600;color:var(--ink);}
+.switch{position:relative;width:52px;height:28px;display:inline-block;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{
+  position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+  background:#ccc;border-radius:28px;transition:.3s;
+}
+.slider::before{
+  content:'';position:absolute;height:22px;width:22px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.3s;
+}
+.switch input:checked+.slider{background:var(--pink);}
+.switch input:checked+.slider::before{transform:translateX(24px);}
+.timer-note{font-size:.76rem;color:var(--soft);text-align:center;margin-bottom:24px;}
+.start-btn{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:1.1rem;
+  background:var(--ink);color:#fff;border:none;padding:16px 44px;
+  border-radius:14px;cursor:pointer;transition:.15s;
+}
+.start-btn:hover{background:var(--pink);transform:scale(1.03);}
+.vnote{font-size:.76rem;color:var(--soft);margin-top:16px;}
+
+/* TEST SCREEN */
+.test-screen{display:none;}
+.top-bar{
+  position:sticky;top:0;z-index:20;
+  background:rgba(250,246,238,.94);backdrop-filter:blur(6px);
+  border-bottom:1px solid #e2dac2;padding:10px 0 12px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.top-left{display:flex;align-items:center;gap:12px;}
+.v-badge{
+  font-family:'Kalam',cursive;font-size:.95rem;
+  background:var(--pink-bg);color:var(--pink);padding:4px 14px;border-radius:16px;
+}
+.ans-count{font-size:.78rem;color:var(--soft);}
+.timer-d{font-family:'Kalam',cursive;font-size:1.3rem;font-weight:700;color:var(--ink);min-width:70px;text-align:right;}
+.timer-d.warn{color:var(--red);animation:pulse .8s infinite alternate;}
+@keyframes pulse{from{opacity:1}to{opacity:.5}}
+.timer-d.off{color:var(--soft);font-size:.85rem;font-weight:400;}
+
+.sec-label{
+  font-family:'Kalam',cursive;font-size:1.5rem;color:var(--ink);
+  margin:24px 0 4px;padding-bottom:4px;border-bottom:2px dashed #e2dac2;
+}
+.sec-sub{font-size:.76rem;color:var(--soft);margin-bottom:14px;}
+.reading-box{
+  background:#fffdf8;border:1px solid #e7dfc8;border-left:5px solid var(--blue);
+  border-radius:4px 10px 10px 4px;padding:18px 20px;margin-bottom:18px;
+  font-size:.87rem;line-height:1.75;
+}
+.reading-box b{color:var(--blue);}
+
+/* QUESTION CARD */
+.qc{
+  background:#fffdf8;border:1px solid #e7dfc8;border-left:5px solid var(--teal);
+  border-radius:4px 10px 10px 4px;padding:14px 16px;margin-bottom:12px;
+  transition:border-color .25s;
+}
+.qc.ok{border-left-color:var(--green);}
+.qc.bad{border-left-color:var(--red);}
+.qn{font-family:'Kalam',cursive;color:var(--pink);margin-right:4px;}
+.qt{font-size:.92rem;line-height:1.5;margin-bottom:8px;}
+.opts{display:flex;flex-direction:column;gap:5px;}
+.ol{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;border-radius:8px;border:1.5px solid #e2dac2;
+  background:#fff;cursor:pointer;font-size:.87rem;transition:.12s;user-select:none;
+}
+.ol:hover{border-color:var(--pink);background:#fff7fb;}
+.ol .dot{
+  width:17px;height:17px;border-radius:50%;border:2px solid #ccc;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;color:transparent;transition:.12s;
+}
+.ol.sel .dot{border-color:var(--blue);background:var(--blue);color:#fff;}
+.ol.right{border-color:var(--green);background:var(--green-bg);}
+.ol.right .dot{border-color:var(--green);background:var(--green);color:#fff;}
+.ol.wr{border-color:var(--red);background:var(--red-bg);text-decoration:line-through;}
+.ol.wr .dot{border-color:var(--red);background:var(--red);color:#fff;}
+.ol.lock{pointer-events:none;opacity:.85;}
+
+/* TEACHER TIP — só aparece nos erros */
+.teacher-tip{
+  display:none;
+  margin-top:10px;padding:10px 14px;
+  background:#FFF8E7;border:1.5px solid #f0d87a;border-radius:8px;
+  font-size:.84rem;line-height:1.55;color:#6b5900;
+}
+.teacher-tip .spy{font-size:1rem;margin-right:4px;}
+.teacher-tip b{color:#9b5d00;}
+
+/* BOTTOM */
+.bottom{text-align:center;margin-top:28px;}
+.big-btn{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;
+  background:var(--ink);color:#fff;border:none;padding:14px 36px;
+  border-radius:12px;cursor:pointer;transition:.15s;
+}
+.big-btn:hover{background:var(--pink);}
+.big-btn:disabled{background:#ccc;cursor:default;}
+
+/* RESULT */
+.result{display:none;text-align:center;margin-top:24px;}
+.result.show{display:block;animation:fadeIn .4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.rb{font-family:'Caveat',cursive;font-size:2.8rem;line-height:1.1;}
+.rs{font-size:1rem;color:var(--ink);margin-top:6px;}
+.rbar-w{max-width:420px;margin:14px auto;height:14px;border-radius:10px;background:#eee3ca;overflow:hidden;}
+.rbar-f{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--pink),var(--blue));transition:width .7s ease;}
+.rp{margin-top:14px;font-size:.82rem;color:var(--soft);}
+.rm{margin-top:10px;font-size:.95rem;font-weight:600;}
+.retry-row{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.rbtn{
+  font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;
+  padding:11px 24px;border-radius:10px;cursor:pointer;transition:.15s;border:none;
+}
+.rbtn-p{background:var(--pink);color:#fff;}
+.rbtn-p:hover{background:var(--ink);}
+.rbtn-s{background:#fff;color:var(--ink);border:1.5px solid #d9d0b3!important;}
+.rbtn-s:hover{border-color:var(--pink)!important;color:var(--pink);}
+
+/* OVERLAY */
+.overlay{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(34,49,79,.85);z-index:100;align-items:center;justify-content:center;
+}
+.overlay.show{display:flex;}
+.overlay-box{
+  background:var(--paper);border-radius:20px;padding:40px 36px;
+  text-align:center;max-width:420px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+.overlay-box h2{font-family:'Caveat',cursive;font-size:2.4rem;color:var(--red);}
+.overlay-box p{color:var(--soft);margin:10px 0 20px;font-size:.95rem;}
+.overlay-box button{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;
+  background:var(--red);color:#fff;border:none;padding:12px 32px;border-radius:12px;cursor:pointer;
+}
+.overlay-box button:hover{background:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="start-screen" id="startScreen">
+    <h1>✈️ English Test Generator</h1>
+    <p class="sub">30 questões — mesmas estruturas, frases novas a cada versão.<br>Errou? A teacher te mostra a pista pra nunca mais errar.</p>
+    <div class="struct-box">
+      <b>25 estruturas fixas + 5 Reading Comprehension</b><br>
+      Cada versão troca as frases, mas o raciocínio é sempre o mesmo. Quando tu erra, aparece a dica da teacher mostrando qual pista na frase te leva à resposta certa.
+    </div>
+    <div class="timer-toggle">
+      <label>⏱ Temporizador (15 min)</label>
+      <label class="switch"><input type="checkbox" id="timerToggle"><span class="slider"></span></label>
+    </div>
+    <div class="timer-note">Ligado = 15 min e fecha sozinho. Desligado = sem pressa.</div>
+    <button class="start-btn" onclick="startTest()">Começar Teste ✏️</button>
+    <div class="vnote" id="vnote"></div>
+  </div>
+
+  <div class="test-screen" id="testScreen">
+    <div class="top-bar">
+      <div class="top-left">
+        <span class="v-badge" id="vBadge">Versão #1</span>
+        <span class="ans-count" id="ansCount">0/30</span>
+      </div>
+      <div class="timer-d" id="timerD">—</div>
+    </div>
+    <div id="testArea"></div>
+    <div class="bottom">
+      <button class="big-btn" id="btnCorr" onclick="correctAll()">Corrigir Teste ✅</button>
+    </div>
+    <div class="result" id="resultArea">
+      <div class="rb" id="resBig"></div>
+      <div class="rs" id="resSub"></div>
+      <div class="rbar-w"><div class="rbar-f" id="resBar"></div></div>
+      <div class="rp" id="resParts"></div>
+      <div class="rm" id="resMsg"></div>
+      <div class="retry-row">
+        <button class="rbtn rbtn-p" onclick="backToStart()">Nova versão 🔄</button>
+        <button class="rbtn rbtn-s" onclick="scrollTo({top:0,behavior:'smooth'})">Revisar erros ↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="timeUpOverlay">
+  <div class="overlay-box">
+    <h2>⏰ Tempo Esgotado!</h2>
+    <p>Os 15 minutos acabaram. Vou corrigir o que tu respondeu.</p>
+    <button onclick="closeOverlay()">Ver Resultado</button>
+  </div>
+</div>
+
+<script>
+// ==================== BANCO DE QUESTÕES ====================
+// Cada slot = 1 estrutura fixa com 4 variações de frase
+// "tip" = dica da teacher que SÓ aparece quando erra
+
+const BANK = [
+
+// 0 — Temporal conjunctions
+[
+  {q:'The crew asked passengers to keep their seatbelts fastened ______ the turbulence had passed.',opts:['unless','until','while','despite'],a:1,
+   tip:'Viu que a ação precisa <b>acabar primeiro</b> pra outra acontecer? → Resposta é <b>until</b>. "Fiquem sentados ATÉ QUE passou."'},
+  {q:'Please remain seated ______ the seatbelt sign is turned off.',opts:['despite','unless','while','until'],a:3,
+   tip:'A ação precisa <b>acabar</b> pra tu levantar? → <b>until</b>. "Fique sentado ATÉ QUE o sinal apague."'},
+  {q:'Boarding will not begin ______ the gate area has been cleared.',opts:['while','despite','unless','until'],a:3,
+   tip:'Não vai começar... ATÉ QUE algo aconteça? → <b>until</b>. Sempre.'},
+  {q:'The captain said meals would not be served ______ the turbulence stopped.',opts:['despite','unless','while','until'],a:3,
+   tip:'"Não vai rolar ATÉ QUE pare" → <b>until</b>.'},
+],
+
+// 1 — Adjective form (calm and ___)
+[
+  {q:'Cabin crew must be able to remain calm and ______ during emergency situations.',opts:['composed','composing','composition','composite'],a:0,
+   tip:'Depois de <b>"and"</b> que já tem um adjetivo (calm), precisa vir <b>outro adjetivo</b>. Composed = controlado.'},
+  {q:'The pilot remained focused and ______ during the rough landing.',opts:['confidence','confide','confidently','confident'],a:3,
+   tip:'Tem <b>"and" + adjetivo antes</b> (focused)? O que vem depois também é <b>adjetivo</b>. Confident = confiante.'},
+  {q:'Passengers described the crew as friendly and ______.',opts:['help','helpful','helpfully','helping'],a:1,
+   tip:'<b>Friendly and ___</b> → adjetivo + and + <b>adjetivo</b>. Helpful = prestativo.'},
+  {q:'A good cabin crew member must be patient and ______ at all times.',opts:['attention','attentive','attentively','attending'],a:1,
+   tip:'<b>Patient and ___</b> → precisa de <b>adjetivo</b>. Attentive = atencioso.'},
+],
+
+// 2 — Used to
+[
+  {q:'Which sentence is grammatically correct?',opts:['I used to play basketball every weekend.','I use to play basketball every weekend.','I used play basketball every weekend.','I am used to play basketball every weekend.'],a:0,
+   tip:'Hábito no passado = <b>used to + verbo base</b>. Sempre "used TO", nunca "use to" nem "used" sozinho.'},
+  {q:'Which sentence is grammatically correct?',opts:['She use to live in London.','She used live in London.','She used to live in London.','She is used to live in London.'],a:2,
+   tip:'Hábito no passado = <b>used to + verbo base</b>. Tem que ter o "to" no meio.'},
+  {q:'Which sentence is grammatically correct?',opts:['We are used to work late.','We used to work late when we were younger.','We use to work late.','We used work late.'],a:1,
+   tip:'Hábito no passado = <b>used to + verbo base</b>. "Are used to" é outra estrutura (estar acostumado a).'},
+  {q:'Which sentence is grammatically correct?',opts:['They use to fly with Emirates.','They used flying with Emirates.','They used to fly with Emirates every summer.','They are used to fly with Emirates.'],a:2,
+   tip:'<b>used to + verbo base</b> = fazia no passado e não faz mais. Sempre nessa ordem.'},
+],
+
+// 3 — Preposition of place
+[
+  {q:'Passengers should place their smaller bags ______ the seat in front of them.',opts:['over','above','under','across'],a:2,
+   tip:'Bolsa vai <b>embaixo</b> do assento da frente. Embaixo = <b>under</b>.'},
+  {q:'The life vest is located ______ your seat.',opts:['over','above','across','under'],a:3,
+   tip:'O colete salva-vidas fica <b>embaixo</b> do assento. Embaixo = <b>under</b>.'},
+  {q:'Please store your personal belongings ______ the overhead compartment.',opts:['under','across','inside','below'],a:2,
+   tip:'Guardar <b>dentro</b> do compartimento. Dentro = <b>inside</b>.'},
+  {q:'The emergency lighting runs ______ the floor on both sides of the aisle.',opts:['over','above','under','along'],a:3,
+   tip:'A luz vai <b>ao longo</b> do chão do corredor. Ao longo = <b>along</b>.'},
+],
+
+// 4 — 3rd conditional
+[
+  {q:'If the flight had been delayed, we ______ more time to finish the briefing.',opts:['would have had','will have','have had','would have'],a:0,
+   tip:'Viu <b>"If + had"</b> no começo? → A outra metade é <b>would have + particípio</b>. Sempre. "Would have had."'},
+  {q:'If she had studied harder, she ______ the exam.',opts:['will pass','would pass','would have passed','has passed'],a:2,
+   tip:'<b>If + had</b> → <b>would have + particípio</b>. "Would have passed."'},
+  {q:'If they had arrived on time, they ______ the connecting flight.',opts:["won't miss","wouldn't miss","wouldn't have missed","didn't miss"],a:2,
+   tip:'<b>If + had</b> → <b>would have + particípio</b>. "Wouldn\'t have missed."'},
+  {q:'If the crew had noticed the leak, the delay ______ avoided.',opts:['will be','would be','could have been','can be'],a:2,
+   tip:'<b>If + had</b> → <b>would/could have + particípio</b>. "Could have been avoided."'},
+],
+
+// 5 — Passive voice (is/was + pp)
+[
+  {q:'The equipment is ______ to alert the crew in case of smoke.',opts:['installed','installing','install','installation'],a:0,
+   tip:'Viu <b>"is ___"</b>? → Passiva. A resposta é o <b>particípio passado</b> (-ed / -en). "Is installed."'},
+  {q:'All emergency exits are clearly ______ with illuminated signs.',opts:['mark','marking','marked','marker'],a:2,
+   tip:'<b>"Are ___"</b> → passiva → <b>particípio</b>. "Are marked."'},
+  {q:'The safety video was ______ in six different languages.',opts:['record','recording','recorder','recorded'],a:3,
+   tip:'<b>"Was ___"</b> → passiva → <b>particípio</b>. "Was recorded."'},
+  {q:'The aircraft is ______ to carry up to 300 passengers.',opts:['design','designed','designing','designer'],a:1,
+   tip:'<b>"Is ___"</b> → passiva → <b>particípio</b>. "Is designed."'},
+],
+
+// 6 — Vocabulary: shortage
+[
+  {q:'Due to a staff ______, several flights experienced delays.',opts:['shortage','overload','excess','harvest'],a:0,
+   tip:'Falta de funcionários causou atraso? → <b>shortage</b> = falta, escassez. Simples assim.'},
+  {q:'The airline is dealing with a severe pilot ______.',opts:['surplus','shortage','expansion','overflow'],a:1,
+   tip:'Falta de pilotos? → <b>shortage</b>. Surplus = sobra (oposto).'},
+  {q:'There was a sudden ______ of available hotel rooms near the airport.',opts:['excess','overflow','shortage','surplus'],a:2,
+   tip:'Falta de quartos? → <b>shortage</b>.'},
+  {q:'Bad weather caused a major ______ of flights at the terminal.',opts:['shortage','backlog','surplus','excess'],a:1,
+   tip:'Acúmulo/atraso de voos? → <b>backlog</b> = pilha de coisas atrasadas.'},
+],
+
+// 7 — Adjective vs adverb (thorough vs thoroughly)
+[
+  {q:'The airline provides a ______ training program for all new employees.',opts:['thoroughly','thorough','thought','through'],a:1,
+   tip:'O que vem <b>antes de um substantivo</b> (training program) é <b>adjetivo</b>. Thorough (adj.) = completo. Thoroughly (adv.) = completamente.'},
+  {q:'The crew conducted a ______ check of all emergency equipment.',opts:['carefully','careful','caring','care'],a:1,
+   tip:'___ check → <b>antes do substantivo = adjetivo</b>. Careful (adj.), não carefully (adv.).'},
+  {q:'She gave a very ______ presentation about safety procedures.',opts:['clearly','clearness','clear','clearing'],a:2,
+   tip:'___ presentation → <b>adjetivo antes do substantivo</b>. Clear (adj.).'},
+  {q:'The inspector made a ______ examination of the aircraft.',opts:['detailed','detailing','detail','detailedly'],a:0,
+   tip:'___ examination → <b>adjetivo antes do substantivo</b>. Detailed (adj.) = detalhado.'},
+],
+
+// 8 — Mustn't
+[
+  {q:"You ______ use your phone during takeoff and landing.",opts:["mustn't","don't have to","might","should"],a:0,
+   tip:'É <b>proibido</b> usar celular na decolagem? → <b>mustn\'t</b> = proibição. "Don\'t have to" = não precisa (mas pode).'},
+  {q:"Passengers ______ smoke anywhere on the aircraft.",opts:["don't have to","should","might","mustn't"],a:3,
+   tip:'Fumar é <b>proibido</b>? → <b>mustn\'t</b>. Sempre.'},
+  {q:"You ______ open the emergency exits unless instructed by the crew.",opts:["don't need to","might","mustn't","could"],a:2,
+   tip:'É <b>proibido</b> abrir a saída de emergência sozinho? → <b>mustn\'t</b>.'},
+  {q:"Crew members ______ share confidential passenger information.",opts:["might","should","don't have to","mustn't"],a:3,
+   tip:'Compartilhar informação é <b>proibido</b>? → <b>mustn\'t</b>.'},
+],
+
+// 9 — Passive modal (must be + pp)
+[
+  {q:'Should any suspicious item be found, it ______ reported immediately.',opts:['must be','must','is','has'],a:0,
+   tip:'Quem reporta não importa — o item <b>deve ser reportado</b>. Passiva com modal = <b>must be + particípio</b>.'},
+  {q:'All exits ______ inspected before every departure.',opts:['must','must be','have','are must'],a:1,
+   tip:'As saídas <b>devem ser</b> inspecionadas. Passiva = <b>must be + particípio</b>.'},
+  {q:'Damaged equipment ______ replaced before the next flight.',opts:['has be','must be','must to be','is must'],a:1,
+   tip:'O equipamento <b>deve ser</b> substituído. → <b>must be + particípio</b>. Nunca "must to be".'},
+  {q:'The safety manual ______ read by every new crew member.',opts:['should','has','should be','is should'],a:2,
+   tip:'O manual <b>deve ser</b> lido. Passiva = <b>should be + particípio</b>.'},
+],
+
+// 10 — Present perfect continuous
+[
+  {q:'I ______ on this project since early this morning and I still have a lot to do.',opts:['has been working','have been working','have worked','have working'],a:1,
+   tip:'Viu <b>"since"</b> + ação que <b>ainda tá rolando</b>? → <b>have/has been + -ing</b>. Sempre.'},
+  {q:'She ______ English for five years now.',opts:['has been studying','is studying','has studying','have been studying'],a:0,
+   tip:'Viu <b>"for five years"</b> + ainda estuda? → <b>has been + -ing</b>. (She = has)'},
+  {q:'They ______ for a response from management all week.',opts:['have waiting','has been waiting','have been waiting','are been waiting'],a:2,
+   tip:'Viu <b>"all week"</b> + ainda esperando? → <b>have been + -ing</b>. (They = have)'},
+  {q:'We ______ this issue since last Monday without a solution.',opts:['have been discussing','has been discussing','are discussing','have discussing'],a:0,
+   tip:'<b>"Since"</b> + ação continua? → <b>have been + -ing</b>.'},
+],
+
+// 11 — Measurement vocabulary
+[
+  {q:"What is the baby's ______? If she is too heavy, it won't be safe to lift her alone.",opts:['height','weight','length','width'],a:1,
+   tip:'Viu <b>"too heavy"</b> na frase? Heavy = pesado → tá falando de <b>weight</b> (peso).'},
+  {q:'The maximum ______ for carry-on luggage is 7 kilograms.',opts:['height','length','width','weight'],a:3,
+   tip:'Viu <b>"kilograms"</b>? Quilos = <b>weight</b> (peso).'},
+  {q:'What is the ______ of this suitcase? It seems too tall for the overhead bin.',opts:['weight','width','length','height'],a:3,
+   tip:'Viu <b>"too tall"</b>? Tall = alto → tá falando de <b>height</b> (altura).'},
+  {q:'Please check the ______ of the box to see if it fits in the compartment.',opts:['weight','height','width','speed'],a:2,
+   tip:'Quer saber se <b>cabe</b> no espaço → tá falando de <b>width</b> (largura).'},
+],
+
+// 12 — 1st conditional
+[
+  {q:"If I ______ any free time this weekend, I'll practice my English.",opts:['will have','had','have','would have'],a:2,
+   tip:'Viu <b>"I\'ll"</b> (will) na outra metade? → 1ª condicional: <b>If + presente simples</b>, will + base. "If I have."'},
+  {q:'If the weather ______ bad tomorrow, the flight will be cancelled.',opts:['will be','is','was','would be'],a:1,
+   tip:'Viu <b>"will"</b> na outra metade? → <b>If + presente simples</b>. "If the weather is."'},
+  {q:'If you ______ early, you will get a better seat.',opts:['arrived','will arrive','arrive','would arrive'],a:2,
+   tip:'Viu <b>"will get"</b>? → <b>If + presente simples</b>. "If you arrive."'},
+  {q:"If the passenger ______ unwell, we will contact the medical team.",opts:['will feel','feels','felt','would feel'],a:1,
+   tip:'Viu <b>"will contact"</b>? → <b>If + presente simples</b>. She/he = "feels" (com s).'},
+],
+
+// 13 — Word form: adjective
+[
+  {q:'She is a very ______ student who always completes her assignments on time.',opts:['diligently','diligent','diligence','diligentful'],a:1,
+   tip:'<b>"A very ___ student"</b> → o que vem entre "very" e um substantivo é <b>adjetivo</b>. Diligent = dedicado.'},
+  {q:'He is a very ______ employee who never misses a deadline.',opts:['reliability','reliable','reliably','reliant'],a:1,
+   tip:'<b>"A very ___ employee"</b> → <b>adjetivo</b>. Reliable = confiável.'},
+  {q:'It is ______ to follow all safety instructions during the flight.',opts:['essentially','essence','essential','essentialing'],a:2,
+   tip:'<b>"It is ___"</b> → depois de "is" vem <b>adjetivo</b>. Essential = essencial.'},
+  {q:'The interview process was highly ______ and transparent.',opts:['competitively','competitive','competition','competed'],a:1,
+   tip:'<b>"Was highly ___"</b> → <b>adjetivo</b>. Competitive = competitivo.'},
+],
+
+// 14 — Passive with modal: correct form
+[
+  {q:'Which sentence is grammatically correct?',opts:['The safety demonstration must to be watched carefully.','The safety demonstration must be watched carefully.','The safety demonstration must watched carefully.','The safety demonstration must watching carefully.'],a:1,
+   tip:'Modal + passiva = <b>must be + particípio</b>. Nunca "must to be", nunca "must" sozinho + particípio.'},
+  {q:'Which sentence is grammatically correct?',opts:['The report should reviewed before Friday.','The report should be reviewed before Friday.','The report should to be reviewed before Friday.','The report should reviewing before Friday.'],a:1,
+   tip:'<b>Should be + particípio</b>. Precisa do "be" no meio. Nunca "should to be".'},
+  {q:'Which sentence is grammatically correct?',opts:['Meals will served after takeoff.','Meals will be served after takeoff.','Meals will be serving after takeoff.','Meals will to be served after takeoff.'],a:1,
+   tip:'<b>Will be + particípio</b>. Precisa do "be".'},
+  {q:'Which sentence is grammatically correct?',opts:['The doors can opened manually.','The doors can be opening manually.','The doors can to be opened manually.','The doors can be opened manually in an emergency.'],a:3,
+   tip:'<b>Can be + particípio</b>. Nunca "can to be".'},
+],
+
+// 15 — Phrasal verbs
+[
+  {q:'The cabin crew need to ______ the safety procedures before takeoff.',opts:['go over','take up','break off','put away'],a:0,
+   tip:'Revisar procedimentos = <b>go over</b>. Go over = revisar/repassar.'},
+  {q:'The manager asked everyone to ______ the new policy before signing.',opts:['put off','go over','break down','give up'],a:1,
+   tip:'Repassar/revisar algo = <b>go over</b>.'},
+  {q:"We need to ______ a solution before tomorrow's meeting.",opts:['come up with','put up with','look down on','run out of'],a:0,
+   tip:'Inventar/encontrar uma solução = <b>come up with</b>.'},
+  {q:'The airline had to ______ several flights due to the storm.',opts:['take off','carry on','call off','get over'],a:2,
+   tip:'Cancelar = <b>call off</b>. Take off = decolar. Carry on = continuar.'},
+],
+
+// 16 — Collocations
+[
+  {q:'A decision was ______ to cancel the event because of the rain.',opts:['done','made','took','taken'],a:1,
+   tip:'<b>Decision</b> sempre vai com <b>MAKE</b>. "Make a decision." Nunca "do a decision".'},
+  {q:'Have you ______ any progress on the project this week?',opts:['done','taken','made','given'],a:2,
+   tip:'<b>Progress</b> sempre vai com <b>MAKE</b>. "Make progress."'},
+  {q:'The company ______ an official announcement about the new route.',opts:['did','took','said','made'],a:3,
+   tip:'<b>Announcement</b> sempre vai com <b>MAKE</b>. "Make an announcement."'},
+  {q:'She ______ a formal complaint about the delay at check-in.',opts:['did','made','took','said'],a:1,
+   tip:'<b>Complaint</b> sempre vai com <b>MAKE</b>. "Make a complaint."'},
+],
+
+// 17 — Adverb form
+[
+  {q:'The pilot promised the issue would be resolved ______.',opts:['promptly','prompt','prompting','promptness'],a:0,
+   tip:'O que vem <b>depois do verbo</b> (resolved) pra dizer COMO foi feito é <b>advérbio</b> (-ly). Promptly = prontamente.'},
+  {q:'The crew responded ______ to the emergency alarm.',opts:['immediate','immediately','immediacy','immediateness'],a:1,
+   tip:'COMO responderam? → <b>advérbio</b> (-ly). Immediately = imediatamente.'},
+  {q:'She completed the training ______ and received her certificate early.',opts:['success','successful','successfully','succeeding'],a:2,
+   tip:'COMO completou? → <b>advérbio</b> (-ly). Successfully = com sucesso.'},
+  {q:'The passengers were ______ informed about the reason for the delay.',opts:['quick','quickness','quicken','quickly'],a:3,
+   tip:'COMO foram informados? → <b>advérbio</b> (-ly). Quickly = rapidamente.'},
+],
+
+// 18 — -able suffix
+[
+  {q:'The mistake was completely ______ if we had checked the data.',opts:['avoidable','uncertain','avoidably','unavoidable'],a:0,
+   tip:'Podia ter sido evitado? → <b>avoidable</b> = evitável. Avoid + able = que pode ser evitado.'},
+  {q:'The damage to the aircraft was clearly ______ after the inspection.',opts:['notice','noticeable','noticing','noticeably'],a:1,
+   tip:'<b>"Was ___"</b> → precisa de <b>adjetivo</b>. Noticeable = perceptível.'},
+  {q:'Is this seat ______ or has it already been taken?',opts:['availability','available','availing','availably'],a:1,
+   tip:'<b>"Is ___ ?"</b> → <b>adjetivo</b>. Available = disponível.'},
+  {q:'The handbook should be easily ______ to all crew members.',opts:['access','accessible','accessing','accessibly'],a:1,
+   tip:'<b>"Be ___"</b> → <b>adjetivo</b>. Accessible = acessível.'},
+],
+
+// 19 — Precise verb
+[
+  {q:'Fitness apps allow you to ______ your daily steps and heart rate.',opts:['checks','monitor','obtain','damage'],a:1,
+   tip:'Acompanhar dados em tempo real = <b>monitor</b>. (E "checks" tá errado porque depois de "to" o verbo é base, sem -s.)'},
+  {q:'The crew must ______ that all exits are clear before landing.',opts:['monitor','damage','verify','obtain'],a:2,
+   tip:'Confirmar/checar se algo tá certo = <b>verify</b>. Monitor = acompanhar. Obtain = obter.'},
+  {q:'Passengers need to ______ a valid visa before traveling.',opts:['monitor','damage','verify','obtain'],a:3,
+   tip:'Conseguir/pegar um visto = <b>obtain</b> = obter.'},
+  {q:'The airline uses sensors to ______ cabin temperature during the flight.',opts:['obtain','damage','repair','monitor'],a:3,
+   tip:'Acompanhar dados continuamente = <b>monitor</b>.'},
+],
+
+// 20 — -ing vs -ed adjective
+[
+  {q:'Her explanation was so ______ that nobody understood.',opts:['clear','confusing','confused','clarified'],a:1,
+   tip:'A explicação <b>CAUSA</b> confusão? → <b>-ing</b> (confusing). As pessoas <b>SENTEM</b> confusão? → -ed (confused). Aqui quem causa é a explicação.'},
+  {q:'The passengers were ______ when the flight was suddenly cancelled.',opts:['shocking','shock','shocked','shockingly'],a:2,
+   tip:'Os passageiros <b>SENTIRAM</b> o choque? → <b>-ed</b> (shocked). Eles não causam o choque, eles sentem.'},
+  {q:'The documentary about aviation was really ______.',opts:['interested','interesting','interest','interestingly'],a:1,
+   tip:'O documentário <b>CAUSA</b> interesse? → <b>-ing</b> (interesting).'},
+  {q:'I felt completely ______ after the 14-hour shift.',opts:['exhausting','exhaust','exhausted','exhaustingly'],a:2,
+   tip:'Eu <b>SENTI</b> exaustão? → <b>-ed</b> (exhausted). O turno causa (-ing), eu sinto (-ed).'},
+],
+
+// 21 — Noun form plural
+[
+  {q:'The airline offers special meals for passengers with dietary ______.',opts:['requirement','requiring','require','requirements'],a:3,
+   tip:'Viu <b>"passengers"</b> (plural)? Vários passageiros, várias necessidades → <b>plural: requirements</b>.'},
+  {q:'Please follow all safety ______ during the flight.',opts:['instruction','instructing','instructions','instruct'],a:2,
+   tip:'Viu <b>"all"</b>? All = todas → <b>plural: instructions</b>.'},
+  {q:'Candidates must meet certain ______ to apply for the position.',opts:['qualify','qualification','qualifying','qualifications'],a:3,
+   tip:'Viu <b>"certain"</b> (certos/certas)? → <b>plural: qualifications</b>.'},
+  {q:'The company has strict ______ about employee conduct.',opts:['regulation','regulating','regulations','regulate'],a:2,
+   tip:'<b>"Strict ___"</b> = regras rígidas → várias regras = <b>plural: regulations</b>.'},
+],
+
+// 22 — Past perfect
+[
+  {q:'By the time we landed, the crew ______ all the required checks.',opts:['completed','have completed','had completed','was completing'],a:2,
+   tip:'Viu <b>"By the time"</b>? → Ação que aconteceu <b>ANTES de outra no passado</b> = <b>had + particípio</b>.'},
+  {q:'When I arrived at the gate, the plane ______ already.',opts:['departed','has departed','had departed','is departing'],a:2,
+   tip:'<b>"When I arrived"</b> + algo já tinha acontecido antes → <b>had + particípio</b>.'},
+  {q:'She realized she ______ her passport at the hotel.',opts:['forgot','has forgotten','had forgotten','is forgetting'],a:2,
+   tip:'Ela percebeu (passado) → o esquecimento foi <b>antes</b> → <b>had forgotten</b>.'},
+  {q:'By the time help arrived, the situation ______ significantly worse.',opts:['got','has gotten','getting','had gotten'],a:3,
+   tip:'<b>"By the time"</b> → <b>had + particípio</b>. "Had gotten worse."'},
+],
+
+// 23 — Hard vs hardly
+[
+  {q:'He always ______ to meet his deadlines and impress his manager.',opts:['work hardly','hardly work','hard working','works hard'],a:3,
+   tip:'<b>Hard</b> depois do verbo = se esforça MUITO. <b>Hardly</b> = QUASE NÃO faz. São opostos! Frase positiva → <b>works hard</b>.'},
+  {q:'She ______ every night to pass the language test.',opts:['studied hard','hardly studied','hard studied','studies hardly'],a:0,
+   tip:'Ela se esforçou → <b>studied hard</b>. (Hard vai depois do verbo.)'},
+  {q:'I can ______ hear the announcement because of the engine noise.',opts:['hard','harder','hardly','hardest'],a:2,
+   tip:'<b>Quase não</b> consigo ouvir → <b>hardly</b>. Hardly = quase não.'},
+  {q:'The team ______ through the night to fix the issue.',opts:['worked hard','hard worked','hardly working','works hardly'],a:0,
+   tip:'Se esforçaram muito → <b>worked hard</b>. Hard sempre depois do verbo.'},
+],
+
+// 24 — Prior to / before / during
+[
+  {q:'She reviewed all the documents carefully ______ submitting them.',opts:['during','after','prior to','while'],a:2,
+   tip:'Revisou <b>ANTES DE</b> entregar? → <b>prior to</b> = antes de (formal). Prior to + -ing.'},
+  {q:'All passengers must turn off electronic devices ______ takeoff.',opts:['during','after','while','prior to'],a:3,
+   tip:'Desligar <b>ANTES</b> da decolagem → <b>prior to</b>.'},
+  {q:'The crew distributes immigration forms ______ the descent.',opts:['prior to','after','during','until'],a:2,
+   tip:'Distribuem <b>ENQUANTO</b> desce? → <b>during</b> = durante.'},
+  {q:'Please verify your documents ______ arriving at the airport.',opts:['during','while','prior to','before'],a:3,
+   tip:'Verificar <b>ANTES DE</b> chegar → <b>before</b>. (Before + -ing)'},
+],
+];
+
+// READING PASSAGES
+const READINGS = [
+{
+  text:`<b>Aviation Security in Modern Airlines</b><br><br>Commercial aviation has significantly evolved as global threats and operational complexities have increased. One of the most critical areas of modern airline management is the enhancement of preventive security measures. Airlines must continuously adapt their protocols, integrating intelligence-based risk assessments, advanced screening technologies, and crew training designed to identify behavioral red flags.<br><br>Despite the use of cutting-edge systems, human factors remain a major vulnerability. A single moment of distraction can compromise both safety and security, which is why crew members undergo recurrent training emphasizing situational awareness, communication under pressure, and coordinated response strategies.<br><br>During in-flight operations, cabin crew act as the first line of defense. They are trained to detect signs of concealed weapons, psychological distress, or attempts to manipulate aircraft systems. The implementation of "sterile cockpit procedures" during critical phases of flight further reduces risks, allowing pilots to remain fully focused on navigation and potential security threats.<br><br>Ultimately, effective airline security requires not only advanced technology but a well-prepared and vigilant crew capable of responding to evolving threats with precision and confidence.`,
+  qs:[
+    {q:'Why must airlines constantly update their protocols?',opts:['To reduce flight delays','Because threats and complexities keep changing','To make flights cheaper','To meet service demands'],a:1,
+     tip:'O texto diz que as ameaças e complexidades <b>aumentaram</b>. Mudou o cenário → muda o protocolo.'},
+    {q:'What is described as a major vulnerability?',opts:['Lack of technology','Human factors','Fuel costs','Passenger feedback'],a:1,
+     tip:'O texto diz <b>"human factors remain a major vulnerability"</b>. Procura "vulnerability" no texto → a resposta tá do lado.'},
+    {q:"Crew recurrent training focuses mainly on:",opts:['Customer service','Memorizing codes','Awareness and coordinated response','Reducing flight times'],a:2,
+     tip:'Procura "recurrent training" no texto → do lado tá <b>"situational awareness" e "coordinated response"</b>.'},
+    {q:'What is the purpose of sterile cockpit procedures?',opts:['Pilots socialize','Prevent cockpit visits','Pilots stay focused on critical operations','Improve ATC communication'],a:2,
+     tip:'Procura "sterile cockpit" no texto → diz <b>"allowing pilots to remain fully focused"</b>.'},
+    {q:'Effective airline security depends on:',opts:['Technology alone','Only regulations','Technology and vigilant crew combined','Passenger complaints'],a:2,
+     tip:'Última frase: <b>"not only technology but a well-prepared crew"</b>. Os dois juntos.'},
+  ]
+},
+{
+  text:`<b>Customer Service Excellence in Aviation</b><br><br>In the highly competitive airline industry, customer service has become a key differentiator. Airlines that prioritize passenger experience tend to build stronger brand loyalty and attract repeat customers. From the moment travelers check in to the moment they collect their luggage, every interaction matters.<br><br>Cabin crew play a central role in shaping the passenger experience. Their ability to communicate clearly, handle complaints diplomatically, and anticipate passenger needs can transform an ordinary flight into a memorable one. Airlines invest heavily in training programs that develop both technical skills and emotional intelligence.<br><br>However, delivering consistently excellent service is not without challenges. Long working hours, jet lag, and dealing with difficult passengers can take a toll on crew morale. Airlines that recognize these challenges often implement wellness programs and provide adequate rest periods to help their staff maintain high performance levels.<br><br>Ultimately, the airlines that succeed are those that treat their employees well, understanding that happy crew members are more likely to deliver outstanding service to passengers.`,
+  qs:[
+    {q:'What has become a key differentiator in the airline industry?',opts:['Ticket prices','Aircraft size','Customer service','Flight frequency'],a:2,
+     tip:'Primeira frase: <b>"customer service has become a key differentiator"</b>. Tá logo no começo.'},
+    {q:'What can transform an ordinary flight into a memorable one?',opts:['Faster aircraft','Crew communication and passenger care','More luggage space','Cheaper meals'],a:1,
+     tip:'Segundo parágrafo: comunicar, lidar com reclamações, antecipar necessidades → <b>transforma o voo</b>.'},
+    {q:'What challenge do cabin crew face?',opts:['Learning to fly','Long working hours and jet lag','Designing uniforms','Managing fuel costs'],a:1,
+     tip:'Terceiro parágrafo: <b>"Long working hours, jet lag"</b>. Tá escrito direto.'},
+    {q:'How do successful airlines support their staff?',opts:['Reducing salaries','Wellness programs and rest periods','Hiring fewer people','Cancelling routes'],a:1,
+     tip:'Procura "implement" no texto → <b>"wellness programs and adequate rest periods"</b>.'},
+    {q:'The main message of the text is:',opts:['Technology matters most','Happy employees lead to better service','Airlines should reduce flights','Passengers should expect less'],a:1,
+     tip:'Última frase: <b>"happy crew members → outstanding service"</b>. Funcionário feliz = serviço bom.'},
+  ]
+},
+{
+  text:`<b>The Role of Communication in Flight Operations</b><br><br>Effective communication is the backbone of safe and efficient flight operations. From pre-flight briefings to in-flight coordination and post-landing procedures, every phase of a flight depends on clear, accurate, and timely information exchange between crew members, air traffic controllers, and ground staff.<br><br>Miscommunication has been identified as a contributing factor in numerous aviation incidents. Studies show that ambiguous language, assumptions, and failure to confirm instructions are among the most common communication errors. To address this, the industry has adopted standardized phraseology and communication protocols that minimize the risk of misunderstanding.<br><br>Cabin crew members are also trained in assertive communication techniques. They must feel empowered to speak up when they observe a potential safety hazard, regardless of the authority gradient. This concept, known as Crew Resource Management (CRM), has significantly improved safety outcomes across the industry.<br><br>As aviation continues to grow, the emphasis on communication training will only increase, reinforcing its position as one of the most critical skills for anyone working in this field.`,
+  qs:[
+    {q:'What is the backbone of safe flight operations?',opts:['Advanced technology','Effective communication','Passenger feedback','Government rules'],a:1,
+     tip:'Primeira frase: <b>"Effective communication is the backbone"</b>. Backbone = base/pilar.'},
+    {q:'What contributes to aviation incidents?',opts:['Bad weather','Miscommunication','Old aircraft','High fuel prices'],a:1,
+     tip:'Segundo parágrafo: <b>"Miscommunication has been identified as a contributing factor"</b>.'},
+    {q:'What does the industry use to reduce misunderstandings?',opts:['Longer flights','Standardized phraseology and protocols','Fewer crew members','Social media'],a:1,
+     tip:'Procura "minimize" no texto → <b>"standardized phraseology and communication protocols"</b>.'},
+    {q:'What is Crew Resource Management (CRM)?',opts:['A booking system','Empowering crew to speak up about safety','A type of engine','A complaint system'],a:1,
+     tip:'Procura "CRM" no texto → <b>"empowered to speak up"</b> sobre perigos.'},
+    {q:'Communication training in aviation will:',opts:['Become less important','Stay the same','Become increasingly important','Be replaced by AI'],a:2,
+     tip:'Última frase: <b>"will only increase"</b>. Vai crescer = cada vez mais importante.'},
+  ]
+},
+];
+
+// ==================== ENGINE ====================
+let ver=0,ans={},locked=false,timerOn=false,timerInt=null,timeLeft=0,curQs=[];
+
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+function startTest(){
+  ver++;locked=false;ans={};curQs=[];
+  timerOn=document.getElementById('timerToggle').checked;
+
+  const grammar=BANK.map(slot=>pick(slot));
+  const reading=pick(READINGS);
+  curQs=[...grammar,...reading.qs];
+
+  let h=`<div class="sec-label">📝 Grammar & Vocabulary (1–25)</div>`;
+  h+=`<div class="sec-sub">Cada número = uma estrutura fixa. Só muda a frase.</div>`;
+  grammar.forEach((q,i)=>{h+=renderQ(i,q);});
+
+  h+=`<div class="sec-label">📖 Reading Comprehension (26–30)</div>`;
+  h+=`<div class="sec-sub">Leia o texto e responda.</div>`;
+  h+=`<div class="reading-box">${reading.text}</div>`;
+  reading.qs.forEach((q,i)=>{h+=renderQ(25+i,q);});
+
+  document.getElementById('testArea').innerHTML=h;
+  document.getElementById('vBadge').textContent='Versão #'+ver;
+  document.getElementById('ansCount').textContent='0/30';
+  document.getElementById('btnCorr').disabled=false;
+  document.getElementById('resultArea').classList.remove('show');
+
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('testScreen').style.display='block';
+  scrollTo({top:0});
+
+  clearInterval(timerInt);
+  const td=document.getElementById('timerD');
+  if(timerOn){
+    timeLeft=15*60;td.classList.remove('off');td.classList.remove('warn');
+    updateTimer();
+    timerInt=setInterval(()=>{
+      timeLeft--;updateTimer();
+      if(timeLeft<=0){clearInterval(timerInt);locked=true;document.getElementById('timeUpOverlay').classList.add('show');}
+    },1000);
+  } else {
+    td.classList.add('off');td.classList.remove('warn');td.textContent='sem timer';
+  }
+}
+
+function updateTimer(){
+  const m=String(Math.floor(timeLeft/60)).padStart(2,'0');
+  const s=String(timeLeft%60).padStart(2,'0');
+  const td=document.getElementById('timerD');
+  td.textContent=m+':'+s;
+  td.classList.toggle('warn',timeLeft<=120);
+}
+
+function renderQ(i,q){
+  let h=`<div class="qc" id="qc-${i}">`;
+  h+=`<div class="qt"><span class="qn">${i+1}.</span> ${q.q}</div><div class="opts">`;
+  q.opts.forEach((o,oi)=>{
+    h+=`<label class="ol" id="ol-${i}-${oi}" onclick="pickA(${i},${oi})">
+      <span class="dot">✓</span><span>${String.fromCharCode(97+oi)}) ${o}</span></label>`;
+  });
+  h+=`</div>`;
+  h+=`<div class="teacher-tip" id="tip-${i}"><span class="spy">🕵️</span> ${q.tip||''}</div>`;
+  h+=`</div>`;
+  return h;
+}
+
+function pickA(qi,oi){
+  if(locked)return;
+  curQs[qi].opts.forEach((_,j)=>document.getElementById('ol-'+qi+'-'+j).classList.remove('sel'));
+  document.getElementById('ol-'+qi+'-'+oi).classList.add('sel');
+  ans[qi]=oi;
+  document.getElementById('ansCount').textContent=Object.keys(ans).length+'/30';
+}
+
+function correctAll(){
+  const total=curQs.length,answered=Object.keys(ans).length;
+  if(answered<total&&!locked){
+    if(!confirm(`Faltam ${total-answered} questão(ões). Corrigir mesmo assim?`))return;
+  }
+  locked=true;clearInterval(timerInt);
+  document.getElementById('btnCorr').disabled=true;
+
+  let correct=0,gC=0,rC=0;
+
+  curQs.forEach((q,i)=>{
+    const chosen=ans[i];
+    const isOk=chosen===q.a;
+    if(isOk){correct++;if(i<25)gC++;else rC++;}
+
+    q.opts.forEach((_,j)=>{
+      const el=document.getElementById('ol-'+i+'-'+j);
+      el.classList.add('lock');
+      if(j===q.a)el.classList.add('right');
+      if(j===chosen&&!isOk)el.classList.add('wr');
+    });
+
+    const card=document.getElementById('qc-'+i);
+    card.classList.add(isOk?'ok':'bad');
+
+    // SÓ mostra a dica da teacher quando ERRA
+    if(!isOk && q.tip){
+      document.getElementById('tip-'+i).style.display='block';
+    }
+  });
+
+  const pct=Math.round((correct/total)*100);
+  const el=document.getElementById('resBig');
+  el.textContent=`${correct}/${total} — ${pct}%`;
+  el.style.color=pct>=80?'var(--green)':pct>=60?'var(--blue)':'var(--red)';
+
+  document.getElementById('resSub').textContent=`Versão #${ver} concluída!`;
+  document.getElementById('resBar').style.width=pct+'%';
+  document.getElementById('resParts').textContent=`Grammar: ${gC}/25 | Reading: ${rC}/5`;
+
+  const msg=pct===100?'PERFEITO!! Manda outra versão pra se manter afiada! 🎉💗':
+    pct>=90?'Arrasou! Quase perfeito! Gera outra pra fixar de vez! 🔥':
+    pct>=70?'Muito bom! Revisa as dicas nos erros e tenta de novo! 💪':
+    pct>=50?'Bom começo! Lê as dicas da teacher com calma e tenta outra! 📖':
+    'Vamos revisar! Lê cada dica amarela, entende o padrão e tenta de novo! 🤍';
+  document.getElementById('resMsg').textContent=msg;
+  document.getElementById('resultArea').classList.add('show');
+}
+
+function closeOverlay(){
+  document.getElementById('timeUpOverlay').classList.remove('show');
+  correctAll();
+}
+
+function backToStart(){
+  document.getElementById('testScreen').style.display='none';
+  document.getElementById('startScreen').style.display='block';
+  document.getElementById('vnote').textContent=ver+' versão(ões) feita(s)';
+  scrollTo({top:0});
+}
+</script>
+</body>
+</html>
